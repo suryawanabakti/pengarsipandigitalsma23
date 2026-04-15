@@ -30,12 +30,30 @@
                     </a>
                 </div>
 
-                <div class="menu-label">Dokumen</div>
-                <div class="menu-item">
-                    <a href="{{ route('documents.index') }}"
-                        class="menu-link {{ request()->routeIs('documents.index*') ? 'active' : '' }}">
-                        <i class="fas fa-file-alt"></i> Semua Dokumen
+                <div class="menu-label">Manajemen File</div>
+
+                @php
+                    $sidebarCategories = \App\Models\DocumentCategory::all();
+                    $isDocumentActive = request()->routeIs('documents.index*');
+                @endphp
+
+                <div class="menu-item has-submenu">
+                    <a href="#" class="menu-link toggle-submenu {{ $isDocumentActive ? 'active' : '' }}" onclick="event.preventDefault(); this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('.fa-chevron-down').style.transform = this.nextElementSibling.style.display === 'none' ? 'rotate(0deg)' : 'rotate(180deg)';">
+                        <i class="fas fa-folder-open"></i> Dokumen
+                        <i class="fas fa-chevron-down ms-auto" style="margin-left: auto; transition: transform 0.3s; {{ $isDocumentActive ? 'transform: rotate(180deg);' : '' }}"></i>
                     </a>
+                    <div class="submenu-items" style="{{ $isDocumentActive ? 'display: block;' : 'display: none;' }}">
+                        <a href="{{ route('documents.index') }}"
+                            class="menu-link {{ request()->routeIs('documents.index*') && !request()->has('category_id') ? 'active' : '' }}" style="padding-left: 45px; font-size: 13px;">
+                            <i class="fas fa-list" style="width: 15px; font-size: 12px;"></i> Semua
+                        </a>
+                        @foreach($sidebarCategories as $category)
+                        <a href="{{ route('documents.index', ['category_id' => $category->id]) }}"
+                            class="menu-link {{ request('category_id') == $category->id ? 'active' : '' }}" style="padding-left: 45px; font-size: 13px;">
+                            <i class="fas fa-angle-right" style="width: 15px; font-size: 12px;"></i> {{ $category->name }}
+                        </a>
+                        @endforeach
+                    </div>
                 </div>
                 
                 @if (in_array(auth()->user()->role->name, ['Admin', 'Tata Usaha']))

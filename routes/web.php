@@ -25,8 +25,13 @@ Route::middleware(['auth', 'role:Admin,Tata Usaha,Kepala Sekolah'])->prefix('adm
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     
     // Documents (Common Access)
+    // Documents (Common Access)
+    Route::get('documents/bulk', [DocumentController::class, 'bulkCreate'])->name('documents.bulk');
+    Route::post('documents/bulk', [DocumentController::class, 'bulkStore'])->name('documents.bulk.store');
     Route::resource('documents', DocumentController::class);
     Route::get('documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
+    Route::get('documents/versions/{version}/download', [DocumentController::class, 'downloadVersion'])->name('documents.versions.download');
+    Route::post('documents/versions/{version}/restore', [DocumentController::class, 'restoreVersion'])->name('documents.versions.restore');
 
     // Reports (Admin & TU)
     Route::middleware(['role:Admin,Tata Usaha'])->group(function () {

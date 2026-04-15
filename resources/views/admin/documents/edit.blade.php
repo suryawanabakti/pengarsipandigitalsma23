@@ -171,6 +171,7 @@
                             <th>Waktu</th>
                             <th>Oleh</th>
                             <th>Catatan</th>
+                            <th style="text-align: right;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -180,6 +181,27 @@
                                 <td>{{ $version->created_at->format('d M Y H:i') }}</td>
                                 <td>{{ $version->uploader->name ?? '-' }}</td>
                                 <td>{{ $version->change_notes ?? '-' }}</td>
+                                <td style="text-align: right; display: flex; justify-content: flex-end; gap: 5px;">
+                                    <a href="{{ route('documents.versions.download', $version->id) }}" class="btn btn-sm"
+                                        style="background: var(--info); color: white; padding: 5px 10px; font-size: 11px;"
+                                        title="Lihat/Unduh Versi Ini">
+                                        <i class="fas fa-eye"></i> Lihat
+                                    </a>
+                                    
+                                    @if($document->file_path !== $version->file_path)
+                                        <form action="{{ route('documents.versions.restore', $version->id) }}" method="POST" 
+                                            onsubmit="return confirm('Apakah Anda yakin ingin mengembalikan dokumen ke versi ini?')">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm" 
+                                                style="background: var(--warning); color: black; padding: 5px 10px; font-size: 11px;"
+                                                title="Kembalikan ke Versi Ini">
+                                                <i class="fas fa-undo"></i> Kembalikan
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="badge" style="background: var(--success); color: white; font-size: 10px; padding: 5px 8px;">Aktif</span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

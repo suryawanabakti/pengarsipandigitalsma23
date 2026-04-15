@@ -7,9 +7,14 @@
         <div class="card-header">
             <h2 class="card-title">Daftar Dokumen</h2>
             @if(auth()->user()->role->name == 'Admin' || auth()->user()->can_upload)
-                <a href="{{ route('documents.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Unggah Dokumen
-                </a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="{{ route('documents.bulk') }}" class="btn" style="background: var(--secondary); color: white;">
+                        <i class="fas fa-folder-plus"></i> Unggah Kolektif
+                    </a>
+                    <a href="{{ route('documents.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Unggah Dokumen
+                    </a>
+                </div>
             @endif
         </div>
         

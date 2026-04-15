@@ -56,6 +56,75 @@ class DocumentController extends Controller
         return view('admin.documents.create', compact('categories', 'units', 'tags'));
     }
 
+    public function bulkCreate()
+    {
+        if (auth()->user()->role->name !== 'Admin' && !auth()->user()->can_upload) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunggah dokumen.');
+        }
+
+        $categories = DocumentCategory::all();
+        $units = Unit::all();
+        $tags = Tag::all();
+        return view('admin.documents.bulk', compact('categories', 'units', 'tags'));
+    }
+
+    public function bulkStore(Request $request)
+    {
+        if (auth()->user()->role->name !== 'Admin' && !auth()->user()->can_upload) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunggah dokumen.');
+        }
+
+        $request->validate([
+            'files' => 'required|array',
+            'files.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+            'category_id' => 'required|exists:document_categories,id',
+            'unit_id' => 'required|exists:units,id',
+            'stage' => 'required|in:draft,final,arsip',
+            'status' => 'required|in:draft,diajukan,disetujui,ditolak',
+            'archive_type' => 'required|in:dinamis,statis',
+        ]);
+
+        $count = 0;
+        foreach ($request->file('files') as $file) {
+            $originalName = $file->getClientOriginalName();
+            $title = pathinfo($originalName, PATHINFO_FILENAME);
+            $fileName = Str::slug($title) . '_' . time() . '_' . $count . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('documents', $fileName, 'public');
+
+            $document = Document::create([
+                'title' => $title,
+                'file_name' => $originalName,
+                'file_path' => $filePath,
+                'file_type' => $file->getClientMimeType(),
+                'document_number' => null,
+                'category_id' => $request->category_id,
+                'unit_id' => $request->unit_id,
+                'uploaded_by' => auth()->id(),
+                'stage' => $request->stage,
+                'status' => $request->status,
+                'archive_type' => $request->archive_type,
+                'document_date' => now(),
+            ]);
+
+            if ($request->tags) {
+                $document->tags()->attach($request->tags);
+            }
+
+            DocumentVersion::create([
+                'document_id' => $document->id,
+                'version_number' => 1,
+                'file_path' => $filePath,
+                'uploaded_by' => auth()->id(),
+                'change_notes' => 'Bulk upload'
+            ]);
+
+            ActivityLogger::log('create', "Bulk Upload: Berhasil mengunggah dokumen: {$document->title}", $document->id);
+            $count++;
+        }
+
+        return redirect()->route('documents.index')->with('success', "{$count} dokumen berhasil diunggah secara kolektif.");
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -388,5 +457,74 @@ class DocumentController extends Controller
         imagedestroy($rotated);
 
         return $path;
+    }
+
+    /**
+     * Download a specific version of a document.
+     */
+    public function downloadVersion(\App\Models\DocumentVersion $version)
+    {
+        if (auth()->user()->role->name !== 'Admin' && !auth()->user()->can_download) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengunduh dokumen.');
+        }
+
+        $document = $version->document;
+        ActivityLogger::log('download', "Mengunduh file dokumen versi v{$version->version_number}: {$document->title}", $document->id);
+
+        $filePath = Storage::disk('public')->path($version->file_path);
+
+        // Watermark PDF files
+        if (str_ends_with(strtolower($version->file_path), '.pdf')) {
+            return $this->downloadWithWatermark($document, $filePath);
+        }
+
+        // Watermark DOCX / Word files
+        if (str_ends_with(strtolower($version->file_path), '.docx')) {
+            return $this->downloadWithWordWatermark($document, $filePath);
+        }
+
+        return Storage::disk('public')->download($version->file_path, "v{$version->version_number}_{$document->file_name}");
+    }
+
+    /**
+     * Restore a document to a specific version.
+     */
+    public function restoreVersion(\App\Models\DocumentVersion $version)
+    {
+        $document = $version->document;
+
+        // Permission check
+        if (auth()->user()->role->name !== 'Admin' && !auth()->user()->can_edit) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengubah dokumen.');
+        }
+
+        // Freeze check
+        if ($document->status == 'disetujui' && auth()->user()->role->name !== 'Admin') {
+            abort(403, 'Dokumen yang telah disetujui tidak dapat diubah.');
+        }
+
+        // Only Owner can edit if not Admin
+        if (auth()->user()->role->name !== 'Admin' && $document->uploaded_by !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki wewenang untuk mengubah dokumen ini.');
+        }
+
+        // Update document with version's file info
+        $document->update([
+            'file_path' => $version->file_path,
+        ]);
+
+        // Create a new version record for the restoration
+        $latestVersion = $document->versions()->max('version_number') ?? 0;
+        \App\Models\DocumentVersion::create([
+            'document_id' => $document->id,
+            'version_number' => $latestVersion + 1,
+            'file_path' => $version->file_path,
+            'uploaded_by' => auth()->id(),
+            'change_notes' => "Direstorasi ke versi v{$version->version_number}"
+        ]);
+
+        ActivityLogger::log('update', "Merestorasi dokumen {$document->title} ke versi v{$version->version_number}", $document->id);
+
+        return redirect()->back()->with('success', "Dokumen berhasil direstorasi ke versi v{$version->version_number}.");
     }
 }

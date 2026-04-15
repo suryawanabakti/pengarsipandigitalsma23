@@ -22,13 +22,33 @@
                 <h2 class="card-title">Pratinjau Dokumen</h2>
             </div>
             <div style="padding: 0; background: #525659; height: 700px; border-radius: 0 0 12px 12px; overflow: hidden;">
-                @if(str_ends_with($document->file_path, '.pdf'))
-                    <iframe src="{{ asset('storage/' . $document->file_path) }}" width="100%" height="100%" style="border: none;"></iframe>
+                @php
+                    $extension = strtolower(pathinfo($document->file_path, PATHINFO_EXTENSION));
+                    $officeExtensions = ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'];
+                    $fileUrl = asset('storage/' . $document->file_path);
+                @endphp
+
+                @if($extension === 'pdf')
+                    <iframe src="{{ $fileUrl }}" width="100%" height="100%" style="border: none;"></iframe>
+                @elseif(in_array($extension, $officeExtensions))
+                    @if(!str_contains(request()->getHost(), 'localhost') && !str_contains(request()->getHost(), '127.0.0.1'))
+                        <iframe src="https://view.officeapps.live.com/op/view.aspx?src={{ urlencode($fileUrl) }}" width="100%" height="100%" style="border: none;"></iframe>
+                    @else
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: white; text-align: center; padding: 40px;">
+                            <i class="fas fa-file-word" style="font-size: 80px; margin-bottom: 20px; opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: 10px;">Pratinjau Dokumen Office</h3>
+                            <p style="margin-bottom: 5px; opacity: 0.8;">Fitur pratinjau ini akan aktif otomatis setelah website <strong>Online</strong>.</p>
+                            <p style="font-size: 13px; opacity: 0.6;">Di localhost, Microsoft tidak dapat mengakses file lokal Anda.</p>
+                            <a href="{{ route('documents.download', $document) }}" class="btn btn-primary" style="margin-top: 25px;">
+                                <i class="fas fa-download"></i> Unduh File
+                            </a>
+                        </div>
+                    @endif
                 @else
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: white; text-align: center; padding: 40px;">
-                        <i class="fas fa-file-word" style="font-size: 80px; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <h3>Pratinjau tidak tersedia untuk format ini</h3>
-                        <p>Format file: <strong>{{ strtoupper(pathinfo($document->file_path, PATHINFO_EXTENSION)) }}</strong></p>
+                        <i class="fas fa-file-alt" style="font-size: 80px; margin-bottom: 20px; opacity: 0.5;"></i>
+                        <h3>Pratinjau tidak tersedia</h3>
+                        <p>Format file: <strong>{{ strtoupper($extension) }}</strong></p>
                         <p>Silakan unduh dokumen untuk melihat isi lengkapnya.</p>
                         <a href="{{ route('documents.download', $document) }}" class="btn btn-primary" style="margin-top: 20px;">
                             <i class="fas fa-download"></i> Unduh Sekarang
