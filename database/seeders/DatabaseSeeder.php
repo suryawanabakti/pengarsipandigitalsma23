@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             DocumentCategorySeeder::class,
             TagSeeder::class,
             UserSeeder::class,
-            DocumentSeeder::class,
-            ActivityLogSeeder::class,
+            // DocumentSeeder::class,
+            // ActivityLogSeeder::class,
         ]);
     }
 }

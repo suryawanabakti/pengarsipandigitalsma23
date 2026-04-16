@@ -13,7 +13,7 @@ class ApprovalController extends Controller
     {
 
         // Only allow Kepala Sekolah or Admin to see this
-        if (!in_array(auth()->user()->role->name, ['Admin', 'Kepala Sekolah', 'Humas'])) {
+        if (!in_array(auth()->user()->role->name, ['Admin', 'Kepala Sekolah', 'Humas', 'Tata Usaha'])) {
             abort(403);
         }
 

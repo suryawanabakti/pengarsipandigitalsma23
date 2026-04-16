@@ -40,7 +40,7 @@ Route::middleware(['auth', 'role:Admin,Tata Usaha,Kepala Sekolah'])->prefix('adm
     });
 
     // Approvals (Admin & Kepsek)
-    Route::middleware(['role:Admin,Kepala Sekolah'])->group(function () {
+    Route::middleware(['role:Admin,Kepala Sekolah,Tata Usaha'])->group(function () {
         Route::get('approvals', [ApprovalController::class, 'index'])->name('approvals.index');
         Route::post('approvals/{document}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
         Route::post('approvals/{document}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');
