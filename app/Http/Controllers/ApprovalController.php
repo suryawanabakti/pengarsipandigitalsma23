@@ -29,6 +29,9 @@ class ApprovalController extends Controller
     {
         $document->update(['status' => 'disetujui']);
 
+        // Apply permanent watermark upon approval
+        \App\Helpers\DocumentWatermarker::watermark($document);
+
         DocumentApproval::create([
             'document_id' => $document->id,
             'approved_by' => auth()->id(),

@@ -325,12 +325,11 @@ class DocumentController extends Controller
      */
     private function downloadWithWatermark(Document $document, string $originalPath)
     {
-        $pdf = new \setasign\Fpdi\Fpdi();
+        $pdf = new \App\Helpers\FpdiAlpha();
         $pdf->SetAutoPageBreak(false);
         $pageCount = $pdf->setSourceFile($originalPath);
 
         $user = auth()->user();
-        $watermarkText = 'SMAN 23 MKS | ' . $user->name . ' | ' . now()->format('d/m/Y H:i') . ' | ' . strtoupper($document->status);
         $footerText = 'Diunduh oleh: ' . $user->name . ' pada ' . now()->format('d F Y, H:i:s') . ' | Sistem Pengarsipan Digital SMAN 23 Makassar';
 
         for ($i = 1; $i <= $pageCount; $i++) {
@@ -340,7 +339,19 @@ class DocumentController extends Controller
             $pdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
             $pdf->useTemplate($templateId);
 
-            // Footer watermark — positioned safely inside page
+            // Center Logo Watermark with Alpha Transparency
+            $logoPath = public_path('sm23logo.png');
+            if (file_exists($logoPath)) {
+                $pdf->SetAlpha(0.15); // Semi-transparent
+                $logoW = 100; 
+                $logoH = 100;
+                $centerX = ($size['width'] - $logoW) / 2;
+                $centerY = ($size['height'] - $logoH) / 2;
+                $pdf->Image($logoPath, $centerX, $centerY, $logoW, $logoH);
+                $pdf->SetAlpha(1); // Reset
+            }
+
+            // Footer watermark
             $pdf->SetFont('Helvetica', '', 7);
             $pdf->SetTextColor(170, 170, 170);
             $pdf->Text(10, $size['height'] - 5, $footerText);
@@ -371,18 +382,22 @@ class DocumentController extends Controller
         // 3) Apply watermark + footer to every section
         foreach ($phpWord->getSections() as $section) {
 
-            // Diagonal image watermark in the header (behind content)
+            // Center logo watermark in the header (behind content)
             $header = $section->addHeader();
-            $header->addWatermark($watermarkImage, [
-                'width'            => 400,
-                'height'           => 250,
-                'marginTop'        => 100,
-                'marginLeft'       => 60,
-                'posHorizontal'    => 'center',
-                'posHorizontalRel' => 'margin',
-                'posVertical'      => 'center',
-                'posVerticalRel'   => 'margin',
-            ]);
+            $logoPath = public_path('sm23logo.png');
+            if (file_exists($logoPath)) {
+                $header->addWatermark($logoPath, [
+                    'width'            => 300,
+                    'height'           => 300,
+                    'marginTop'        => 0,
+                    'marginLeft'       => 0,
+                    'posHorizontal'    => 'center',
+                    'posHorizontalRel' => 'page',
+                    'posVertical'      => 'center',
+                    'posVerticalRel'   => 'page',
+                    'wrappingStyle'    => 'behind',
+                ]);
+            }
 
             // Metadata footer
             $footer = $section->addFooter();
