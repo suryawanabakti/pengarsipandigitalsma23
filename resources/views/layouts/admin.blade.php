@@ -5,10 +5,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - SMAN 23 Makassar</title>
+    <link rel="icon" type="image/png" href="{{ asset('sm23logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <style>
+        .sidebar-logo {
+            width: 24px !important;
+            height: 24px !important;
+            min-width: 24px !important;
+            max-width: 24px !important;
+            object-fit: contain !important;
+        }
+        .sidebar-header {
+            padding: 10px 16px !important;
+            height: 50px !important;
+            overflow: hidden !important;
+        }
+        .sidebar-brand {
+            font-size: 16px !important;
+        }
+    </style>
     @stack('styles')
 </head>
 
@@ -17,7 +35,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="user-avatar">23</div>
+                <img src="{{ asset('sm23logo.png') }}" alt="Logo" class="sidebar-logo">
                 <div class="sidebar-brand">SMAN 23 MKS</div>
             </div>
 

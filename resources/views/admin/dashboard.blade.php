@@ -3,6 +3,92 @@
 @section('title', 'Dashboard ' . $role)
 
 @section('content')
+    <!-- Search Bar -->
+    <div class="card" style="margin-bottom: 24px; overflow: visible;">
+        <div style="padding: 24px;">
+            <form action="{{ route('admin.dashboard') }}" method="GET" style="display: flex; gap: 12px; align-items: center;">
+                <div style="position: relative; flex: 1;">
+                    <i class="fas fa-search" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px;"></i>
+                    <input type="text" name="search" class="form-control" 
+                        placeholder="Cari dokumen berdasarkan judul, nomor surat, atau ditujukan..." 
+                        value="{{ $searchQuery ?? '' }}"
+                        style="padding-left: 44px; padding-right: 16px; height: 48px; font-size: 15px; border-radius: 12px; border: 2px solid var(--border); transition: all 0.3s;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="height: 48px; padding: 0 24px; border-radius: 12px; font-size: 15px;">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+                @if(!empty($searchQuery))
+                    <a href="{{ route('admin.dashboard') }}" class="btn" style="height: 48px; padding: 0 18px; border-radius: 12px; background: var(--secondary); color: white; font-size: 14px;">
+                        <i class="fas fa-times"></i> Reset
+                    </a>
+                @endif
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    @if(!empty($searchQuery) && $searchResults !== null)
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-search" style="color: var(--primary); margin-right: 8px;"></i>
+                    Hasil Pencarian: "{{ $searchQuery }}"
+                    <span class="badge badge-info" style="margin-left: 8px;">{{ $searchResults->count() }} ditemukan</span>
+                </h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Judul Dokumen</th>
+                            <th>Nomor</th>
+                            <th>Ditujukan Kepada</th>
+                            <th>Kategori</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($searchResults as $doc)
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600;">{{ $doc->title }}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted);">
+                                        {{ $doc->uploader->name ?? '-' }} · {{ $doc->created_at->format('d M Y') }}
+                                    </div>
+                                </td>
+                                <td>{{ $doc->document_number ?? '-' }}</td>
+                                <td>{{ $doc->ditujukan_kepada ?? '-' }}</td>
+                                <td>{{ $doc->category->name ?? '-' }}</td>
+                                <td>
+                                    <span class="badge 
+                                        @if($doc->status == 'disetujui') badge-success 
+                                        @elseif($doc->status == 'diajukan') badge-info 
+                                        @elseif($doc->status == 'ditolak') badge-danger 
+                                        @else badge-warning @endif">
+                                        {{ $doc->status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('documents.show', $doc) }}" class="btn" style="padding: 6px 10px; font-size: 12px; background: var(--primary); color: white;">
+                                        <i class="fas fa-eye"></i> Lihat
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                    <i class="fas fa-search" style="font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.3;"></i>
+                                    Tidak ada dokumen ditemukan untuk pencarian "{{ $searchQuery }}".
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
     <!-- Stats Grid -->
     <div class="stats-grid">
         @if($role == 'Admin')

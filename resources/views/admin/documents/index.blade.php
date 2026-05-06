@@ -57,6 +57,7 @@
                     <tr>
                         <th>Judul Dokumen</th>
                         <th>Nomor</th>
+                        <th>Ditujukan</th>
                         <th>Kategori</th>
                         <th>Unit</th>
                         <th>Status</th>
@@ -74,6 +75,7 @@
                                 </div>
                             </td>
                             <td>{{ $doc->document_number ?? '-' }}</td>
+                            <td>{{ $doc->ditujukan_kepada ?? '-' }}</td>
                             <td>{{ $doc->category->name }}</td>
                             <td>{{ $doc->unit->name }}</td>
                             <td>
@@ -128,7 +130,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
                                 <i class="fas fa-file-excel"
                                     style="font-size: 40px; margin-bottom: 10px; display: block;"></i>
                                 Tidak ada dokumen ditemukan.

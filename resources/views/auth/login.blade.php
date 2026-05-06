@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - SMAN 23 Makassar Archiving System</title>
+    <link rel="icon" type="image/png" href="{{ asset('sm23logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
-    <div class="auth-container">
+    <div class="auth-container" style="background: url('{{ asset('background.png') }}') center/cover no-repeat;">
+
         <div class="auth-card">
             <div class="auth-header">
-                {{-- <img src="{{ asset('img/logo.png') }}" alt="Logo" class="auth-logo"> --}}
-                <h1 class="auth-title">SMA 23 Makassar</h1>
+                <img src="{{ asset('sm23logo.png') }}" alt="Logo SMAN 23 Makassar" class="auth-logo">
+                <h1 class="auth-title">SMA Negeri 23 Makassar</h1>
                 <p class="auth-subtitle">Sistem Pengarsipan Digital</p>
             </div>
 

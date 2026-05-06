@@ -80,6 +80,10 @@
                             <div style="font-weight: 600;">{{ $document->document_number ?? '-' }}</div>
                         </div>
                         <div>
+                            <label style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Ditujukan Kepada</label>
+                            <div style="font-weight: 600;">{{ $document->ditujukan_kepada ?? '-' }}</div>
+                        </div>
+                        <div>
                             <label style="display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Kategori</label>
                             <div style="font-weight: 600;">{{ $document->category->name }}</div>
                         </div>

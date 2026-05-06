@@ -11,7 +11,7 @@ use App\Models\ActivityLog;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
         $role = $user->role->name;
@@ -48,6 +48,21 @@ class AdminController extends Controller
             $stats['recent_approvals'] = Document::whereIn('status', ['disetujui', 'ditolak'])->latest()->take(5)->get();
         }
 
-        return view('admin.dashboard', compact('stats', 'role'));
+        // Dashboard Search
+        $searchResults = null;
+        $searchQuery = $request->input('search');
+        if ($searchQuery) {
+            $searchResults = Document::with(['category', 'unit', 'uploader'])
+                ->where(function($q) use ($searchQuery) {
+                    $q->where('title', 'like', '%' . $searchQuery . '%')
+                      ->orWhere('document_number', 'like', '%' . $searchQuery . '%')
+                      ->orWhere('ditujukan_kepada', 'like', '%' . $searchQuery . '%');
+                })
+                ->latest()
+                ->take(10)
+                ->get();
+        }
+
+        return view('admin.dashboard', compact('stats', 'role', 'searchResults', 'searchQuery'));
     }
 }

@@ -45,6 +45,15 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="ditujukan_kepada" class="form-label">Ditujukan Kepada</label>
+                    <input type="text" name="ditujukan_kepada" id="ditujukan_kepada" class="form-control"
+                        placeholder="Contoh: Kepala Sekolah, Wakil Kepala Sekolah, Semua Guru" value="{{ old('ditujukan_kepada') }}">
+                    @error('ditujukan_kepada')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
                         <label for="category_id" class="form-label">Kategori <span

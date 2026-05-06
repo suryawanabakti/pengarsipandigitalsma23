@@ -147,6 +147,7 @@ class DocumentController extends Controller
             'file_path' => $filePath,
             'file_type' => $file->getClientMimeType(),
             'document_number' => $request->document_number,
+            'ditujukan_kepada' => $request->ditujukan_kepada,
             'category_id' => $request->category_id,
             'unit_id' => $request->unit_id,
             'uploaded_by' => auth()->id(),

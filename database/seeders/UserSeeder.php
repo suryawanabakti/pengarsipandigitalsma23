@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
 
         $userData = [
             'Admin' => [
-                'name' => 'Super Admin',
+                'name' => 'Admin',
                 'email' => 'admin@sma23.sch.id',
             ],
             'Tata Usaha' => [

@@ -12,6 +12,7 @@ class Document extends Model
         'file_path',
         'file_type',
         'document_number',
+        'ditujukan_kepada',
         'category_id',
         'unit_id',
         'uploaded_by',
