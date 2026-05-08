@@ -2,6 +2,27 @@
 
 @section('title', 'Dashboard ' . $role)
 
+@push('styles')
+<style>
+    .stats-card {
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -5px rgba(0, 0, 0, 0.04);
+        border-color: var(--primary);
+    }
+    .stats-card:active {
+        transform: translateY(-2px);
+    }
+    .status-item:hover {
+        background: rgba(0, 0, 0, 0.04);
+        transform: translateX(5px);
+    }
+</style>
+@endpush
+
 @section('content')
     <!-- Search Bar -->
     <div class="card" style="margin-bottom: 24px; overflow: visible;">
@@ -92,7 +113,7 @@
     <!-- Stats Grid -->
     <div class="stats-grid">
         @if($role == 'Admin')
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('documents.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Total Dokumen</h3>
                     <p>{{ $stats['total_documents'] }}</p>
@@ -102,7 +123,7 @@
                 </div>
             </div>
 
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('categories.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Kategori Dokumen</h3>
                     <p>{{ $stats['total_categories'] }}</p>
@@ -112,7 +133,7 @@
                 </div>
             </div>
 
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('users.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Pengguna Sistem</h3>
                     <p>{{ $stats['total_users'] }}</p>
@@ -122,7 +143,7 @@
                 </div>
             </div>
         @elseif($role == 'Tata Usaha')
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('documents.index', ['unit_id' => auth()->user()->unit_id]) }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Dokumen Unit Kerja</h3>
                     <p>{{ $stats['unit_documents'] }}</p>
@@ -131,7 +152,7 @@
                     <i class="fas fa-building"></i>
                 </div>
             </div>
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('documents.index', ['uploaded_by' => auth()->id()]) }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Unggahan Saya</h3>
                     <p>{{ $stats['my_uploads'] }}</p>
@@ -140,7 +161,7 @@
                     <i class="fas fa-cloud-upload-alt"></i>
                 </div>
             </div>
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('documents.index', ['status' => 'draft', 'unit_id' => auth()->user()->unit_id]) }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Dokumen Draft</h3>
                     <p>{{ $stats['document_by_status']['draft'] }}</p>
@@ -150,7 +171,7 @@
                 </div>
             </div>
         @elseif($role == 'Kepala Sekolah')
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('approvals.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Menunggu Persetujuan</h3>
                     <p>{{ $stats['pending_approvals'] }}</p>
@@ -159,7 +180,7 @@
                     <i class="fas fa-clock"></i>
                 </div>
             </div>
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('documents.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Total Dokumen</h3>
                     <p>{{ $stats['total_documents'] }}</p>
@@ -168,7 +189,7 @@
                     <i class="fas fa-file-alt"></i>
                 </div>
             </div>
-            <div class="stats-card">
+            <div class="stats-card" onclick="window.location.href='{{ route('approvals.index') }}'" style="cursor: pointer;">
                 <div class="stats-info">
                     <h3>Disetujui Hari Ini</h3>
                     <p>{{ $stats['approved_by_me_count'] }}</p>
@@ -179,7 +200,7 @@
             </div>
         @endif
         
-        <div class="stats-card">
+        <div class="stats-card" onclick="window.location.href='{{ route('documents.index', $role == 'Tata Usaha' ? ['unit_id' => auth()->user()->unit_id] : []) }}'" style="cursor: pointer;">
             <div class="stats-info">
                 <h3>Total Arsip</h3>
                 <p>{{ $stats['total_documents'] }}</p>
@@ -295,7 +316,9 @@
             <div style="padding: 24px;">
                 <div style="display: flex; flex-direction: column; gap: 16px;">
                     @foreach(['disetujui' => 'success', 'diajukan' => 'info', 'draft' => 'warning', 'ditolak' => 'danger'] as $status => $color)
-                        <div>
+                        <div onclick="window.location.href='{{ route('documents.index', ['status' => $status] + ($role == 'Tata Usaha' ? ['unit_id' => auth()->user()->unit_id] : [])) }}'" 
+                             style="cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s;"
+                             class="status-item">
                             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
                                 <span style="text-transform: capitalize;">{{ $status }}</span>
                                 <span class="badge badge-{{ $color }}">{{ $stats['document_by_status'][$status] }}</span>

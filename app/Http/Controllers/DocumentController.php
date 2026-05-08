@@ -34,8 +34,16 @@ class DocumentController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        if ($request->unit_id) {
+            $query->where('unit_id', $request->unit_id);
+        }
+
         if ($request->status) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->uploaded_by) {
+            $query->where('uploaded_by', $request->uploaded_by);
         }
 
         $documents = $query->latest()->paginate(10);
