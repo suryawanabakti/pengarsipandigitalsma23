@@ -18,11 +18,13 @@
             max-width: 24px !important;
             object-fit: contain !important;
         }
+
         .sidebar-header {
             padding: 10px 16px !important;
             height: 50px !important;
             overflow: hidden !important;
         }
+
         .sidebar-brand {
             font-size: 16px !important;
         }
@@ -98,7 +100,8 @@
                     <div class="menu-item">
                         <a href="{{ route('approvals.index') }}"
                             class="menu-link {{ request()->routeIs('approvals.index*') ? 'active' : '' }}">
-                            <i class="fas fa-check-circle"></i> <span>Persetujuan</span> @if (\App\Models\Document::where('status', 'diajukan')->count() > 0)
+                            <i class="fas fa-check-circle"></i> <span>Persetujuan</span>
+                            @if (\App\Models\Document::where('status', 'diajukan')->count() > 0)
                                 <span
                                     style="background: var(--danger); color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px;">{{ \App\Models\Document::where('status', 'diajukan')->count() }}</span>
                             @endif
@@ -170,7 +173,8 @@
             <!-- Topbar -->
             <header class="topbar">
                 <div style="display: flex; align-items: center; gap: 20px;">
-                    <button id="sidebarToggle" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; transition: background 0.2s;">
+                    <button id="sidebarToggle"
+                        style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-main); display: flex; align-items: center; justify-content: center; padding: 5px; border-radius: 4px; transition: background 0.2s;">
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="page-title">@yield('title', 'Dashboard')</div>
@@ -200,8 +204,15 @@
             <div class="content-body">
                 @if (session('success'))
                     <div class="badge badge-success"
-                        style="width: 100%; padding: 15px; margin-bottom: 20px; text-align: center;">
+                        style="width: 100%; padding: 15px; margin-bottom: 20px; text-align: center; display: block;">
                         {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="badge badge-danger"
+                        style="width: 100%; padding: 15px; margin-bottom: 20px; text-align: center; display: block;">
+                        {{ session('error') }}
                     </div>
                 @endif
 
@@ -216,7 +227,7 @@
                 const toggleBtn = document.getElementById('sidebarToggle');
                 const sidebar = document.querySelector('.sidebar');
                 const mainContent = document.querySelector('.main-content');
-                
+
                 if (!toggleBtn || !sidebar || !mainContent) return;
 
                 // Fungsi untuk menerapkan state
@@ -239,7 +250,7 @@
                     e.preventDefault();
                     const currentState = sidebar.classList.contains('collapsed');
                     const newState = !currentState;
-                    
+
                     setSidebarState(newState);
                     localStorage.setItem('sidebar-collapsed', newState);
                 });

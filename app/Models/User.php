@@ -14,6 +14,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'unit_id',
         'can_view',
         'can_upload',
         'can_edit',
@@ -37,6 +38,11 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     public function documents()
