@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
@@ -20,7 +20,10 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            \App\Models\Role::create(['name' => $role]);
+            Role::updateOrCreate(
+                ['name' => $role], // kondisi pencarian
+                ['name' => $role]  // data yang diupdate/dibuat
+            );
         }
     }
 }
