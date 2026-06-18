@@ -15,6 +15,7 @@ class RolePermissionSeeder extends Seeder
         $admin = \App\Models\Role::where('name', 'Admin')->first();
         $tu = \App\Models\Role::where('name', 'Tata Usaha')->first();
         $ks = \App\Models\Role::where('name', 'Kepala Sekolah')->first();
+        $ktu = \App\Models\Role::where('name', 'Kepala Tata Usaha')->first();
 
         $permissions = \App\Models\Permission::all();
 
@@ -32,6 +33,14 @@ class RolePermissionSeeder extends Seeder
 
         // Kepala Sekolah
         $ks->permissions()->attach($permissions->whereIn('name', [
+            'view-documents',
+            'download-documents',
+            'approve-documents',
+            'view-logs'
+        ]));
+
+        // Kepala Tata Usaha
+        $ktu->permissions()->attach($permissions->whereIn('name', [
             'view-documents',
             'download-documents',
             'approve-documents',

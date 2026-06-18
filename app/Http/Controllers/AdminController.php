@@ -42,7 +42,7 @@ class AdminController extends Controller
                 'disetujui' => Document::where('unit_id', $user->unit_id)->where('status', 'disetujui')->count(),
                 'ditolak' => Document::where('unit_id', $user->unit_id)->where('status', 'ditolak')->count(),
             ];
-        } elseif ($role == 'Kepala Sekolah') {
+        } elseif (in_array($role, ['Kepala Sekolah', 'Kepala Tata Usaha'])) {
             $stats['pending_approvals'] = Document::where('status', 'diajukan')->count();
             $stats['approved_by_me_count'] = ActivityLog::where('user_id', $user->id)->where('activity', 'approve')->count();
             $stats['recent_approvals'] = Document::whereIn('status', ['disetujui', 'ditolak'])->latest()->take(5)->get();

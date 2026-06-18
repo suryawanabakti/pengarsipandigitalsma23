@@ -81,7 +81,7 @@
                     </div>
                 </div>
 
-                @if (in_array(auth()->user()->role->name, ['Admin', 'Tata Usaha']))
+                @if (in_array(auth()->user()->role->name, ['Admin', 'Tata Usaha', 'Kepala Tata Usaha']))
                     <div class="menu-item">
                         <a href="{{ route('documents.create') }}"
                             class="menu-link {{ request()->routeIs('documents.create') ? 'active' : '' }}">
@@ -96,7 +96,7 @@
                     </div>
                 @endif
 
-                @if (in_array(auth()->user()->role->name, ['Admin', 'Kepala Sekolah', 'Tata Usaha']))
+                @if (auth()->user()->role->name == 'Kepala Tata Usaha')
                     <div class="menu-item">
                         <a href="{{ route('approvals.index') }}"
                             class="menu-link {{ request()->routeIs('approvals.index*') ? 'active' : '' }}">
@@ -141,7 +141,7 @@
                     </div>
                 @endif
 
-                @if (in_array(auth()->user()->role->name, ['Admin', 'Tata Usaha']))
+                @if (in_array(auth()->user()->role->name, ['Admin', 'Tata Usaha', 'Kepala Tata Usaha']))
                     <div class="menu-item">
                         <a href="{{ route('reports.index') }}"
                             class="menu-link {{ request()->routeIs('reports.index*') ? 'active' : '' }}">

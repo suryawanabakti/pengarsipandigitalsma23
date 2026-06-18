@@ -21,7 +21,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth', 'role:Admin,Tata Usaha,Kepala Sekolah'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:Admin,Tata Usaha,Kepala Sekolah,Kepala Tata Usaha'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     
     // Documents (Common Access)
@@ -33,14 +33,14 @@ Route::middleware(['auth', 'role:Admin,Tata Usaha,Kepala Sekolah'])->prefix('adm
     Route::get('documents/versions/{version}/download', [DocumentController::class, 'downloadVersion'])->name('documents.versions.download');
     Route::post('documents/versions/{version}/restore', [DocumentController::class, 'restoreVersion'])->name('documents.versions.restore');
 
-    // Reports (Admin & TU)
-    Route::middleware(['role:Admin,Tata Usaha'])->group(function () {
+    // Reports (Admin, TU, & Kepala TU)
+    Route::middleware(['role:Admin,Tata Usaha,Kepala Tata Usaha'])->group(function () {
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
         Route::get('reports/print', [ReportController::class, 'print'])->name('reports.print');
     });
 
-    // Approvals (Admin & Kepsek)
-    Route::middleware(['role:Admin,Kepala Sekolah,Tata Usaha'])->group(function () {
+    // Approvals (Hanya Kepala Tata Usaha)
+    Route::middleware(['role:Kepala Tata Usaha'])->group(function () {
         Route::get('approvals', [ApprovalController::class, 'index'])->name('approvals.index');
         Route::post('approvals/{document}/approve', [ApprovalController::class, 'approve'])->name('approvals.approve');
         Route::post('approvals/{document}/reject', [ApprovalController::class, 'reject'])->name('approvals.reject');

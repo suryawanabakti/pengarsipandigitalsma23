@@ -27,6 +27,10 @@ class UserSeeder extends Seeder
                 'name' => 'Dr. H. Ahmad Fauzi',
                 'email' => 'ahmad.ks@sma23.sch.id',
             ],
+            'Kepala Tata Usaha' => [
+                'name' => 'Siti Rahmawati, S.E.',
+                'email' => 'siti.ktu@sma23.sch.id',
+            ],
 
         ];
 
@@ -37,7 +41,7 @@ class UserSeeder extends Seeder
             if ($role) {
                 // Assign unit based on role
                 $unitId = null;
-                if ($roleName == 'Tata Usaha') {
+                if ($roleName == 'Tata Usaha' || $roleName == 'Kepala Tata Usaha') {
                     $unitId = $units->where('name', 'Bagian Tata Usaha')->first()?->id;
                 } elseif ($roleName == 'Kurikulum') {
                     $unitId = $units->where('name', 'Unit Kurikulum')->first()?->id;

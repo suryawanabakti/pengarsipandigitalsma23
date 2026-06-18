@@ -11,10 +11,9 @@ class ApprovalController extends Controller
 {
     public function index()
     {
-
-        // Only allow Kepala Sekolah or Admin to see this
-        if (!in_array(auth()->user()->role->name, ['Admin', 'Kepala Sekolah', 'Humas', 'Tata Usaha'])) {
-            abort(403);
+        // Only allow Kepala Tata Usaha to view approval queue
+        if (auth()->user()->role->name !== 'Kepala Tata Usaha') {
+            abort(403, 'Anda tidak memiliki hak akses untuk halaman ini.');
         }
 
         $documents = Document::with(['category', 'unit', 'uploader'])
@@ -27,6 +26,11 @@ class ApprovalController extends Controller
 
     public function approve(Request $request, Document $document)
     {
+        // Only Kepala Tata Usaha can approve documents
+        if (auth()->user()->role->name !== 'Kepala Tata Usaha') {
+            abort(403, 'Hanya Kepala Tata Usaha yang dapat menyetujui dokumen.');
+        }
+
         $document->update(['status' => 'disetujui']);
 
         // Apply permanent watermark upon approval
@@ -47,6 +51,11 @@ class ApprovalController extends Controller
 
     public function reject(Request $request, Document $document)
     {
+        // Only Kepala Tata Usaha can reject documents
+        if (auth()->user()->role->name !== 'Kepala Tata Usaha') {
+            abort(403, 'Hanya Kepala Tata Usaha yang dapat menolak dokumen.');
+        }
+
         $request->validate(['notes' => 'required|string']);
 
         $document->update(['status' => 'ditolak']);
